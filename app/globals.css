@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #070a12;
+  color: #e5e7eb;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  background-image:
+    radial-gradient(1100px 520px at 100% -5%, rgba(99, 102, 241, 0.16), transparent 60%),
+    radial-gradient(900px 480px at 0% 0%, rgba(34, 211, 238, 0.1), transparent 55%),
+    radial-gradient(1000px 600px at 50% 120%, rgba(168, 85, 247, 0.1), transparent 60%);
+  background-attachment: fixed;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+@layer components {
+  /* Elevated translucent surface used across the app */
+  .glass {
+    @apply border border-white/10 bg-white/[0.035] backdrop-blur-xl;
+  }
+
+  .card {
+    @apply rounded-2xl border border-pitch-border/80 bg-pitch-card/80 backdrop-blur-sm;
+  }
+
+  .card-hover {
+    @apply transition duration-300 hover:-translate-y-0.5 hover:border-pitch-brand hover:shadow-glow;
+  }
+
+  /* Animated brand gradient text */
+  .brand-text {
+    @apply animate-gradient-x bg-brand-gradient bg-clip-text text-transparent;
+    background-size: 200% 200%;
+  }
+
+  /* Primary CTA with brand gradient + glow */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-2.5 text-sm font-bold text-white shadow-glow transition hover:brightness-110 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-bold text-gray-100 transition hover:border-white/30 hover:bg-white/10;
+  }
+
+  /* Sidebar / nav link */
+  .nav-link {
+    @apply flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-gray-400 transition hover:bg-white/5 hover:text-white;
+  }
+  .nav-link-active {
+    @apply bg-brand-gradient text-white shadow-glow;
+  }
+
+  /* Small section eyebrow label */
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.28em] text-pitch-accent;
+  }
+}
+
+@layer utilities {
+  .animated-gradient {
+    background-size: 200% 200%;
+  }
+
+  .bracket-hero {
+    background:
+      radial-gradient(1200px 400px at 50% -10%, rgba(99, 102, 241, 0.22), transparent 60%),
+      radial-gradient(800px 300px at 90% 10%, rgba(34, 211, 238, 0.16), transparent 60%);
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(90deg, #fde68a, #f59e0b, #fde68a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Faint grid texture overlay */
+  .grid-overlay {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+}
