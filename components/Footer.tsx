@@ -20,13 +20,15 @@ export function Footer() {
               <p className="text-lg font-black tracking-tight text-white">
                 World Cup <span className="brand-text">Hub</span>
               </p>
-              <p className="eyebrow mt-1.5">Powered by StreamNet</p>
+              <p className="eyebrow mt-1.5">Powered by{" "}
+                <a href="https://github.com/liad07/StreamNet" target="_blank" rel="noopener noreferrer" className="transition hover:text-pitch-accent">StreamNet</a>
+              </p>
             </div>
 
             <p className="max-w-[15rem] text-xs leading-relaxed text-gray-500">
               נבנה באהבה <span className="text-pitch-live">❤️</span> ע״י{" "}
-              <span className="font-bold text-gray-300">Crack Apps</span> · מבוסס על{" "}
-              <span className="font-bold text-gray-300">StreamNet</span>
+              <a href="https://github.com/liad07/crack-apps.github.io" target="_blank" rel="noopener noreferrer" className="font-bold text-gray-300 transition hover:text-pitch-accent">Crack Apps</a> · מבוסס על{" "}
+              <a href="https://github.com/liad07/StreamNet" target="_blank" rel="noopener noreferrer" className="font-bold text-gray-300 transition hover:text-pitch-accent">StreamNet</a>
             </p>
 
             <Link href="/about" className="btn-ghost mt-1 w-full py-2.5 text-xs">

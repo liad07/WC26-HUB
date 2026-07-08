@@ -55,13 +55,14 @@ function LineageCard({ active }: { active: boolean }) {
             World Cup <span className="brand-text">Hub</span>
           </p>
           <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">
-            Powered by StreamNet
+            Powered by{" "}
+            <a href="https://github.com/liad07/StreamNet" target="_blank" rel="noopener noreferrer" className="transition hover:text-pitch-accent">StreamNet</a>
           </p>
         </div>
 
         <p className="text-[11px] leading-relaxed text-gray-500">
           נבנה באהבה <span className="text-pitch-live">❤</span> ע״י{" "}
-          <span className="font-bold text-gray-300">Crack Apps</span>
+          <a href="https://github.com/liad07/crack-apps.github.io" target="_blank" rel="noopener noreferrer" className="font-bold text-gray-300 transition hover:text-pitch-accent">Crack Apps</a>
         </p>
 
         <Link

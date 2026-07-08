@@ -30,9 +30,9 @@
 
 ## ✨ What is this?
 
-**World Cup Hub** is the current flagship experience from **[Crack Apps](https://github.com/liad07)** (est. 2019) — a personal software studio for apps, games, and tutorials. It carries forward the spirit of **StreamNet**, a graduation-project live streaming platform (*“Streaming Everything You Need”*). Think of World Cup Hub as **StreamNet 2.0**: focused, polished, and built for the biggest tournament on earth.
+**World Cup Hub** is the current flagship experience from **[Crack Apps](https://github.com/liad07/crack-apps.github.io)** (est. 2019) — a personal software studio for apps, games, and tutorials. It carries forward the spirit of **[StreamNet](https://github.com/liad07/StreamNet)**, a graduation-project live streaming platform (*“Streaming Everything You Need”*). Think of World Cup Hub as **StreamNet 2.0**: focused, polished, and built for the biggest tournament on earth.
 
-Built with ❤️ by **Crack Apps** · Powered by **StreamNet**
+Built with ❤️ by **[Crack Apps](https://github.com/liad07/crack-apps.github.io)** · Powered by **[StreamNet](https://github.com/liad07/StreamNet)**
 
 ## 🎯 Features
 
@@ -65,11 +65,11 @@ Data layers combine **FIFA-facing feeds**, **API-Football**, TV/XMLTV-style guid
 
 | Project | Role |
 |---------|------|
-| **Crack Apps** | Studio hub — apps, experiments, and learning projects since 2019 |
-| **StreamNet** | Original streaming vision — graduation project, spiritual predecessor to this app |
-| **World Cup Hub** | Production-focused sports product for WC 2026 — what you are looking at now |
+| **[Crack Apps](https://github.com/liad07/crack-apps.github.io)** | Studio hub — apps, experiments, and learning projects since 2019 |
+| **[StreamNet](https://github.com/liad07/StreamNet)** | Original streaming vision — graduation project, spiritual predecessor to this app |
+| **[World Cup Hub](https://github.com/liad07/WC26-HUB)** | Production-focused sports product for WC 2026 — [live demo](https://mundial-now.vercel.app) |
 
-Older Crack Apps / StreamNet repositories may be private or archived; this repo is the public home for the **WC26** experience.
+Explore the lineage: [Crack Apps](https://github.com/liad07/crack-apps.github.io) → [StreamNet](https://github.com/liad07/StreamNet) → [World Cup Hub](https://github.com/liad07/WC26-HUB).
 
 ## 🚀 Getting started
 
@@ -123,5 +123,5 @@ This project is shared as a portfolio / learning artifact. Respect third-party A
 ---
 
 <p align="center">
-  <sub>World Cup Hub · <a href="https://mundial-now.vercel.app">mundial-now.vercel.app</a> · Crack Apps × StreamNet</sub>
+  <sub>World Cup Hub · <a href="https://mundial-now.vercel.app">mundial-now.vercel.app</a> · Crack Apps](https://github.com/liad07/crack-apps.github.io) · [StreamNet](https://github.com/liad07/StreamNet)</sub>
 </p>
