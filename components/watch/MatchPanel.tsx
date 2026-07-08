@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Match } from "@/types/match";
 import { useFetch } from "@/lib/useFetch";
 import { isLiveStatus } from "@/lib/format";
-import { flagUrl } from "@/lib/flags";
+import { teamImageSrc } from "@/lib/flags";
 import { LiveBadge } from "@/components/common";
 import { LiveClock } from "@/components/LiveClock";
 import { MatchEvents } from "@/components/MatchEvents";
@@ -114,22 +114,18 @@ function MatchMeta({ match }: { match: Match }) {
 }
 
 function TeamSide({ name, logo }: { name: string; logo?: string }) {
-  const src = flagUrl(name, 80) ?? logo ?? null;
+  const src = teamImageSrc({ name, logo: logo ?? "" }, 80);
   return (
     <div className="flex flex-1 flex-col items-center gap-1.5 text-center">
-      {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={name}
-          width={52}
-          height={38}
-          loading="lazy"
-          className="h-[38px] w-[52px] rounded object-cover shadow"
-        />
-      ) : (
-        <div className="flex h-[38px] w-[52px] items-center justify-center rounded bg-pitch-bg text-xl">🏳️</div>
-      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={name}
+        width={52}
+        height={38}
+        loading="lazy"
+        className="h-[38px] w-[52px] rounded object-cover shadow"
+      />
       <span className="text-sm font-bold text-gray-100">{name}</span>
     </div>
   );

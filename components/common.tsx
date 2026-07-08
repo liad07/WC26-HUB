@@ -1,6 +1,8 @@
 import Link from "next/link";
-import type { MatchStatus, TeamInfo } from "@/types/match";
-import { flagUrl } from "@/lib/flags";
+import type { MatchStatus } from "@/types/match";
+import { TeamCrest } from "@/components/TeamCrest";
+
+export { TeamCrest };
 
 /** Pulsing red badge shown for live matches. */
 export function LiveBadge({ label = "LIVE" }: { label?: string }) {
@@ -29,23 +31,6 @@ export function StatusPill({ status, label }: { status: MatchStatus; label: stri
     <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[status]}`}>
       {label}
     </span>
-  );
-}
-
-/** Team crest: real country flag for national teams, else the API logo. */
-export function TeamCrest({ team, size = 40 }: { team: TeamInfo; size?: number }) {
-  const src = flagUrl(team.name, 80) ?? team.logo;
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt={team.name}
-      width={size}
-      height={size}
-      loading="lazy"
-      className="rounded-sm object-contain"
-      style={{ width: size, height: size }}
-    />
   );
 }
 
