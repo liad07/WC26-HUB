@@ -6,6 +6,7 @@ import { Brand } from "@/components/Brand";
 import { Icon } from "@/components/Icon";
 import { NAV_ITEMS } from "@/lib/nav";
 import { ShabbatIndicator } from "@/components/shabbat/ShabbatIndicator";
+import { AdminNavLink } from "@/components/admin/AdminNavLink";
 
 /** Persistent desktop sidebar (RTL, right-aligned) with brand, live CTA and nav. */
 export function Sidebar() {
@@ -41,6 +42,8 @@ export function Sidebar() {
       </nav>
 
       <ShabbatIndicator />
+
+      <AdminNavLink compact />
 
       <LineageCard active={isActive("/about")} />
     </aside>

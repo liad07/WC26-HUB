@@ -7,6 +7,7 @@ import { Topbar } from "@/components/Topbar";
 import { BottomNav } from "@/components/BottomNav";
 import { Footer } from "@/components/Footer";
 import { ShabbatGuard } from "@/components/ShabbatGuard";
+import { AnalyticsBeacon } from "@/components/AnalyticsBeacon";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 import { PwaInstallPrompt } from "@/components/pwa/PwaInstallPrompt";
 import { CHAT_AUTH_ENABLED } from "@/lib/features";
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen font-sans antialiased">
         <PwaRegister />
         <ShabbatGuard>
+          <AnalyticsBeacon />
           <Sidebar />
           <div className="lg:mr-64">
             <Topbar />

@@ -2,6 +2,7 @@ import { Brand } from "@/components/Brand";
 import { Icon } from "@/components/Icon";
 import { CHAT_AUTH_ENABLED } from "@/lib/features";
 import { TopbarAuth } from "@/components/TopbarAuth";
+import { AdminNavLink } from "@/components/admin/AdminNavLink";
 
 /** Sticky top bar: mobile brand, search field and account/notification actions. */
 export function Topbar() {
@@ -24,6 +25,7 @@ export function Topbar() {
         </label>
 
         <div className="mr-auto flex items-center gap-2">
+          <AdminNavLink />
           <button
             aria-label="חיפוש"
             className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-gray-300 transition hover:text-white sm:hidden"
