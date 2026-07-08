@@ -3,25 +3,26 @@
 import { useMemo } from "react";
 import type { Match } from "@/types/match";
 import { useFetch } from "@/lib/useFetch";
-import { buildColumns, champion, thirdPlaceMatch } from "@/lib/bracket";
+import { champion } from "@/lib/bracket";
+import { buildBracketView } from "@/lib/bracketTree";
 import { flagUrl } from "@/lib/flags";
 import { EmptyState, ErrorState } from "@/components/common";
 import { MatchListSkeleton } from "@/components/LoadingSkeleton";
 import { BracketMatchCard } from "@/components/bracket/BracketMatchCard";
+import { BracketConnectors } from "@/components/bracket/BracketConnectors";
 
 type BracketResponse = { matches: Match[]; source: string };
 
-/** Live knockout bracket: champion banner, ordered round columns and the third-place tie. */
+/** Live knockout bracket: champion banner, tree columns with feeder connectors. */
 export function BracketBoard() {
   const { data, loading, error } = useFetch<BracketResponse>("/api/bracket", 60_000);
   const matches = useMemo(() => data?.matches ?? [], [data]);
-  const columns = useMemo(() => buildColumns(matches), [matches]);
-  const third = useMemo(() => thirdPlaceMatch(matches), [matches]);
+  const view = useMemo(() => buildBracketView(matches), [matches]);
   const winner = useMemo(() => champion(matches), [matches]);
 
   if (loading && !data) return <MatchListSkeleton count={4} />;
   if (error) return <ErrorState message={error} retryHref="/tournament?tab=knockout" />;
-  if (columns.length === 0)
+  if (view.rounds.length === 0)
     return <EmptyState title="הבראקט טרם נפתח" hint="שלב הנוקאאוט יופיע כאן ברגע שייקבע" />;
 
   return (
@@ -29,26 +30,55 @@ export function BracketBoard() {
       {winner && <ChampionBanner name={winner.name} />}
 
       <div className="overflow-x-auto pb-4">
-        <div className="flex min-w-max gap-4 md:gap-6">
-          {columns.map((col, ci) => (
-            <div key={col.round} className="flex w-[230px] shrink-0 flex-col">
-              <RoundHeader label={col.label} count={col.matches.length} />
-              <div className="flex flex-1 flex-col justify-around gap-3">
-                {col.matches.map((m, mi) => (
-                  <BracketMatchCard key={m.id} match={m} delay={ci * 90 + mi * 45} />
-                ))}
-              </div>
+        <div dir="rtl" className="inline-flex min-w-max items-start gap-0 px-1">
+          {view.rounds.map((round, index) => (
+            <div key={round.round} className="flex items-start">
+              <BracketRoundColumn round={round} totalHeight={view.totalHeight} delayBase={index * 90} />
+              {index < view.rounds.length - 1 && (
+                <BracketConnectors
+                  left={round}
+                  right={view.rounds[index + 1]}
+                  height={view.totalHeight}
+                />
+              )}
             </div>
           ))}
         </div>
       </div>
 
-      {third && (
+      {view.thirdPlace && (
         <div className="max-w-[280px]">
           <RoundHeader label="המקום השלישי" count={1} muted />
-          <BracketMatchCard match={third} />
+          <BracketMatchCard match={view.thirdPlace} />
         </div>
       )}
+    </div>
+  );
+}
+
+function BracketRoundColumn({
+  round,
+  totalHeight,
+  delayBase,
+}: {
+  round: ReturnType<typeof buildBracketView>["rounds"][number];
+  totalHeight: number;
+  delayBase: number;
+}) {
+  return (
+    <div className="w-[220px] shrink-0 md:w-[230px]">
+      <RoundHeader label={round.label} count={round.slots.length} />
+      <div className="relative" style={{ height: totalHeight }}>
+        {round.slots.map((slot, index) => (
+          <div
+            key={slot.match.id}
+            className="absolute inset-x-0"
+            style={{ top: slot.topPx }}
+          >
+            <BracketMatchCard match={slot.match} delay={delayBase + index * 45} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

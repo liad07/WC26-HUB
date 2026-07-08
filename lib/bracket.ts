@@ -1,4 +1,5 @@
 import type { Match } from "@/types/match";
+import { ROUND_SLOT_NUMBERS } from "@/lib/bracketTree";
 
 export const ROUND_ORDER = [
   "Round of 32",
@@ -29,16 +30,29 @@ export function roundLabel(round: string): string {
   return ROUND_HE[round] ?? round;
 }
 
-/** Groups knockout fixtures into ordered bracket columns (skipping empty rounds). */
+/** Groups knockout fixtures into ordered bracket columns using FIFA slot order. */
 export function buildColumns(matches: Match[]): BracketColumn[] {
+  const byNumber = new Map<number, Match>();
+  for (const match of matches) {
+    if (match.matchNumber != null) byNumber.set(match.matchNumber, match);
+  }
+
   const columns: BracketColumn[] = [];
   for (const round of ROUND_ORDER) {
-    const roundMatches = matches
-      .filter((m) => m.round === round)
-      .sort((a, b) => a.timestamp - b.timestamp);
-    if (roundMatches.length > 0) {
-      columns.push({ round, label: roundLabel(round), matches: roundMatches });
+    const slotNumbers = ROUND_SLOT_NUMBERS[round];
+    const roundMatches = slotNumbers
+      .map((num) => byNumber.get(num))
+      .filter((m): m is Match => m != null);
+    if (roundMatches.length === 0) {
+      const fallback = matches
+        .filter((m) => m.round === round)
+        .sort((a, b) => (a.matchNumber ?? a.timestamp) - (b.matchNumber ?? b.timestamp));
+      if (fallback.length > 0) {
+        columns.push({ round, label: roundLabel(round), matches: fallback });
+      }
+      continue;
     }
+    columns.push({ round, label: roundLabel(round), matches: roundMatches });
   }
   return columns;
 }

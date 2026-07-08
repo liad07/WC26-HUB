@@ -48,6 +48,7 @@ export interface StatItem {
 
 export interface Match {
   id: number;
+  matchNumber?: number;
   dateISO: string;
   timestamp: number;
   status: MatchStatus;

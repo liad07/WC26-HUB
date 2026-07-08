@@ -47,6 +47,7 @@ interface FifaMatch {
   Date: string;
   MatchStatus: number;
   MatchTime: string | null;
+  MatchNumber?: number;
   Period?: number;
   HomeTeamScore: number | null;
   AwayTeamScore: number | null;
@@ -286,6 +287,7 @@ class FifaApiClient {
     const clock = this.parseMinute(m.MatchTime);
     return {
       id: Number(m.IdMatch),
+      matchNumber: m.MatchNumber,
       dateISO: m.Date,
       timestamp: Math.floor(new Date(m.Date).getTime() / 1000),
       status,
