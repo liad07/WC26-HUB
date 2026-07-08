@@ -1,7 +1,7 @@
 "use client";
 
 import type { Match, TeamInfo } from "@/types/match";
-import { flagUrl } from "@/lib/flags";
+import { teamImageSrc } from "@/lib/flags";
 import { isLiveStatus } from "@/lib/format";
 import { formatIsraelTime } from "@/lib/date";
 import { winnerOf } from "@/lib/bracket";
@@ -15,7 +15,7 @@ export function BracketMatchCard({ match, delay = 0 }: { match: Match; delay?: n
   return (
     <div
       style={{ animationDelay: `${delay}ms` }}
-      className={`group animate-fade-up overflow-hidden rounded-xl border bg-gradient-to-b from-pitch-card to-pitch-bg/70 shadow-lg transition duration-300 hover:-translate-y-0.5 hover:border-pitch-accent/50 hover:shadow-pitch-accent/10 ${
+      className={`group flex min-h-[98px] flex-col justify-center animate-fade-up overflow-hidden rounded-xl border bg-gradient-to-b from-pitch-card to-pitch-bg/70 shadow-lg transition duration-300 hover:-translate-y-0.5 hover:border-pitch-accent/50 hover:shadow-pitch-accent/10 ${
         live ? "animate-glow-live border-pitch-live/60" : "border-pitch-border"
       }`}
     >
@@ -53,7 +53,7 @@ function TeamRow({
   showScore: boolean;
 }) {
   const named = Boolean(team.name);
-  const flag = named ? flagUrl(team.name, 40) : null;
+  const src = named ? teamImageSrc(team, 40) : null;
   return (
     <div
       className={`flex items-center gap-2 px-2.5 py-1.5 ${
@@ -61,9 +61,9 @@ function TeamRow({
       }`}
     >
       <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-pitch-bg ring-1 ring-white/15">
-        {flag ? (
+        {src ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={flag} alt={team.name} loading="lazy" className="h-full w-full object-cover" />
+          <img src={src} alt={team.name} loading="lazy" className="h-full w-full object-cover" />
         ) : (
           <span className="text-[10px] text-gray-500">?</span>
         )}

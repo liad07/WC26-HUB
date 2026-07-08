@@ -13,7 +13,7 @@ export function BracketConnectors({
   right: BracketRoundView;
   height: number;
 }) {
-  const width = 28;
+  const width = 32;
   const pairs = right.slots.length;
 
   return (

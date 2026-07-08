@@ -1,8 +1,9 @@
 import type { Match, TeamInfo } from "@/types/match";
 import { roundLabel, winnerOf } from "@/lib/bracket";
 
-export const BRACKET_CARD_HEIGHT = 76;
-export const BRACKET_GAP = 10;
+export const BRACKET_CARD_HEIGHT = 98;
+export const BRACKET_GAP = 16;
+export const BRACKET_PAIR_GAP = 20;
 export const BRACKET_UNIT = BRACKET_CARD_HEIGHT + BRACKET_GAP;
 
 const THIRD_PLACE = "Play-off for third place";
@@ -107,7 +108,7 @@ export function buildBracketView(matches: Match[]): BracketView {
   return {
     rounds,
     thirdPlace: byNumber.get(103) ?? resolved.find((m) => m.round === THIRD_PLACE) ?? null,
-    totalHeight: 16 * BRACKET_UNIT,
+    totalHeight: bracketTotalHeight(),
   };
 }
 
@@ -153,8 +154,18 @@ function resolveTeamSlot(team: TeamInfo, byNumber: Map<number, Match>): TeamInfo
 }
 
 function slotTop(depth: number, slot: number): number {
-  const block = BRACKET_UNIT * 2 ** depth;
-  return slot * block + (block - BRACKET_CARD_HEIGHT) / 2;
+  if (depth === 0) {
+    const pairOffset = Math.floor(slot / 2) * BRACKET_PAIR_GAP;
+    return slot * BRACKET_UNIT + (BRACKET_UNIT - BRACKET_CARD_HEIGHT) / 2 + pairOffset;
+  }
+  const topA = slotTop(depth - 1, slot * 2);
+  const topB = slotTop(depth - 1, slot * 2 + 1);
+  return (topA + topB) / 2;
+}
+
+function bracketTotalHeight(): number {
+  const lastR32Slot = ROUND_SLOT_NUMBERS["Round of 32"].length - 1;
+  return slotTop(0, lastR32Slot) + BRACKET_CARD_HEIGHT + BRACKET_UNIT / 2;
 }
 
 export function feederPair(round: string, slot: number): readonly [number, number] | null {

@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import type { Match } from "@/types/match";
 import { useFetch } from "@/lib/useFetch";
 import { champion } from "@/lib/bracket";
-import { buildBracketView } from "@/lib/bracketTree";
-import { flagUrl } from "@/lib/flags";
+import { buildBracketView, BRACKET_CARD_HEIGHT } from "@/lib/bracketTree";
+import { teamImageSrc } from "@/lib/flags";
 import { EmptyState, ErrorState } from "@/components/common";
 import { MatchListSkeleton } from "@/components/LoadingSkeleton";
 import { BracketMatchCard } from "@/components/bracket/BracketMatchCard";
@@ -65,15 +65,33 @@ function BracketRoundColumn({
   totalHeight: number;
   delayBase: number;
 }) {
+  const isR32 = round.round === "Round of 32";
+
   return (
-    <div className="w-[220px] shrink-0 md:w-[230px]">
+    <div className="w-[240px] shrink-0 md:w-[252px]">
       <RoundHeader label={round.label} count={round.slots.length} />
       <div className="relative" style={{ height: totalHeight }}>
+        {isR32 &&
+          Array.from({ length: round.slots.length / 2 }, (_, pairIndex) => {
+            const first = round.slots[pairIndex * 2];
+            const second = round.slots[pairIndex * 2 + 1];
+            if (!first || !second) return null;
+            const top = first.topPx - 6;
+            const height = second.topPx + BRACKET_CARD_HEIGHT - first.topPx + 12;
+            return (
+              <div
+                key={`pair-${pairIndex}`}
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 rounded-xl border border-white/[0.06] bg-white/[0.02]"
+                style={{ top, height }}
+              />
+            );
+          })}
         {round.slots.map((slot, index) => (
           <div
             key={slot.match.id}
             className="absolute inset-x-0"
-            style={{ top: slot.topPx }}
+            style={{ top: slot.topPx, height: BRACKET_CARD_HEIGHT }}
           >
             <BracketMatchCard match={slot.match} delay={delayBase + index * 45} />
           </div>
@@ -99,7 +117,7 @@ function RoundHeader({ label, count, muted }: { label: string; count: number; mu
 }
 
 function ChampionBanner({ name }: { name: string }) {
-  const flag = flagUrl(name, 160);
+  const flag = teamImageSrc({ name, logo: "" }, 160);
   return (
     <div className="animate-glow-champion relative overflow-hidden rounded-2xl border border-yellow-500/50 bg-gradient-to-l from-yellow-500/15 via-pitch-card to-pitch-card p-5 text-center">
       <div className="flex items-center justify-center gap-3">
