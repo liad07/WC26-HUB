@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
+import { VideoPlatform } from "@/lib/videoPlatform";
 
 interface LivePlayerProps {
   src: string;
@@ -49,11 +50,16 @@ export function LivePlayer({ src }: LivePlayerProps) {
     const video = videoRef.current;
     if (!video) return;
 
+    video.setAttribute("webkit-playsinline", "true");
+    video.setAttribute("x-webkit-airplay", "allow");
+
     setError(false);
     setLoading(true);
     let recovers = 0;
 
-    if (Hls.isSupported()) {
+    if (VideoPlatform.shouldUseNativeHls(video)) {
+      video.src = src;
+    } else if (Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: false,
@@ -111,22 +117,32 @@ export function LivePlayer({ src }: LivePlayerProps) {
   }, [src, reloadKey]);
 
   useEffect(() => {
-    const onFsChange = () => setFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener("fullscreenchange", onFsChange);
-    setPipSupported(
-      typeof document !== "undefined" && document.pictureInPictureEnabled === true
-    );
-
     const video = videoRef.current;
+    if (!video) return;
+
+    const onFsChange = () => setFullscreen(Boolean(document.fullscreenElement));
+    const onWebkitBeginFs = () => setFullscreen(true);
+    const onWebkitEndFs = () => setFullscreen(false);
     const onEnterPip = () => setPip(true);
     const onLeavePip = () => setPip(false);
-    video?.addEventListener("enterpictureinpicture", onEnterPip);
-    video?.addEventListener("leavepictureinpicture", onLeavePip);
+    const onWebkitPresentationChange = () => setPip(VideoPlatform.isInPip(video));
+
+    document.addEventListener("fullscreenchange", onFsChange);
+    video.addEventListener("webkitbeginfullscreen", onWebkitBeginFs);
+    video.addEventListener("webkitendfullscreen", onWebkitEndFs);
+    video.addEventListener("enterpictureinpicture", onEnterPip);
+    video.addEventListener("leavepictureinpicture", onLeavePip);
+    video.addEventListener("webkitpresentationmodechanged", onWebkitPresentationChange);
+
+    setPipSupported(VideoPlatform.supportsPip(video));
 
     return () => {
       document.removeEventListener("fullscreenchange", onFsChange);
-      video?.removeEventListener("enterpictureinpicture", onEnterPip);
-      video?.removeEventListener("leavepictureinpicture", onLeavePip);
+      video.removeEventListener("webkitbeginfullscreen", onWebkitBeginFs);
+      video.removeEventListener("webkitendfullscreen", onWebkitEndFs);
+      video.removeEventListener("enterpictureinpicture", onEnterPip);
+      video.removeEventListener("leavepictureinpicture", onLeavePip);
+      video.removeEventListener("webkitpresentationmodechanged", onWebkitPresentationChange);
     };
   }, []);
 
@@ -157,19 +173,16 @@ export function LivePlayer({ src }: LivePlayerProps) {
   };
 
   const toggleFullscreen = () => {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else containerRef.current?.requestFullscreen().catch(() => undefined);
+    const video = videoRef.current;
+    const container = containerRef.current;
+    if (!video || !container) return;
+    VideoPlatform.enterFullscreen(video, container).catch(() => undefined);
   };
 
-  const togglePip = async () => {
+  const togglePip = () => {
     const video = videoRef.current;
     if (!video) return;
-    try {
-      if (document.pictureInPictureElement) await document.exitPictureInPicture();
-      else await video.requestPictureInPicture();
-    } catch {
-      /* ignore unsupported / user-gesture errors */
-    }
+    VideoPlatform.togglePip(video).catch(() => undefined);
   };
 
   const revealControls = () => {
@@ -214,6 +227,7 @@ export function LivePlayer({ src }: LivePlayerProps) {
       ref={containerRef}
       dir="ltr"
       onMouseMove={revealControls}
+      onTouchStart={revealControls}
       onMouseLeave={() => playing && setControlsVisible(false)}
       className="group relative overflow-hidden rounded-2xl border border-pitch-border bg-black shadow-xl shadow-black/40"
     >
@@ -228,6 +242,8 @@ export function LivePlayer({ src }: LivePlayerProps) {
         ref={videoRef}
         autoPlay
         playsInline
+        disablePictureInPicture={false}
+        controls={false}
         onClick={togglePlay}
         onPlay={() => {
           setPlaying(true);
@@ -301,7 +317,7 @@ export function LivePlayer({ src }: LivePlayerProps) {
               <div className="relative">
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20"
                 >
                   <GearIcon />
                   {currentLabel}
@@ -351,7 +367,7 @@ function ControlButton({
     <button
       onClick={onClick}
       aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-lg text-white transition hover:bg-white/15"
+      className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-white transition hover:bg-white/15 active:bg-white/25"
     >
       {children}
     </button>
@@ -362,7 +378,7 @@ function QualityOption({ active, onClick, label }: { active: boolean; onClick: (
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center justify-between px-3 py-2 text-right transition hover:bg-pitch-bg ${
+      className={`flex w-full min-h-11 items-center justify-between px-3 py-2 text-right transition hover:bg-pitch-bg ${
         active ? "font-bold text-pitch-accent" : "text-gray-200"
       }`}
     >
