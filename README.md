@@ -1,77 +1,90 @@
 <p align="center">
-  <img src="public/images/hero-trophy.png" alt="World Cup Hub trophy" width="120" />
+  <img src="app/icon.png" alt="World Cup Hub" width="128" height="128" />
 </p>
 
-<h1 align="center">World Cup Hub · Mundial Now</h1>
+<h1 align="center">World Cup Hub</h1>
 
 <p align="center">
-  <strong>StreamNet 2.0</strong> — premium sports streaming for FIFA World Cup 2026<br/>
-  <em>מונדיאל עכשיו · חוויית סטרימינג בעברית (RTL)</em>
+  <strong>Powered by StreamNet</strong> · StreamNet 2.0<br/>
+  <em>חוויית המונדיאל 2026 — שידורים, תוצאות, טבלאות וצ׳אט אוהדים (RTL)</em>
 </p>
 
 <p align="center">
-  <a href="https://mundial-now.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-mundial--now.vercel.app-00A86B?style=for-the-badge" alt="Live demo" /></a>
+  <a href="https://wchub26.vercel.app"><img src="https://img.shields.io/badge/Live-wchub26.vercel.app-6366f1?style=for-the-badge" alt="Live demo" /></a>
   <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js" alt="Next.js 15" /></a>
-  <a href="https://vercel.com"><img src="https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel" alt="Vercel" /></a>
+  <a href="https://vercel.com"><img src="https://img.shields.io/badge/Vercel-Production-black?style=for-the-badge&logo=vercel" alt="Vercel" /></a>
   <a href="https://github.com/liad07/WC26-HUB"><img src="https://img.shields.io/badge/GitHub-WC26--HUB-181717?style=for-the-badge&logo=github" alt="GitHub" /></a>
 </p>
 
 <p align="center">
-  <a href="https://mundial-now.vercel.app">🌐 Production</a> ·
-  <a href="https://mundial-now.vercel.app/about">📖 About (in app)</a> ·
-  <a href="https://github.com/liad07/WC26-HUB">⭐ Source</a>
+  <a href="https://wchub26.vercel.app">🌐 Production</a> ·
+  <a href="https://wchub26.vercel.app/about">📖 About</a> ·
+  <a href="https://github.com/liad07/crack-apps.github.io">🧩 Crack Apps</a> ·
+  <a href="https://github.com/liad07/StreamNet">📡 StreamNet</a>
 </p>
 
 ---
 
 <p align="center">
-  <img src="public/images/hero-stadium.png" alt="Stadium hero" width="100%" />
+  <img src="public/images/hero-stadium.png" alt="Stadium" width="100%" />
 </p>
 
-## ✨ What is this?
+## What is World Cup Hub?
 
-**World Cup Hub** is the current flagship experience from **[Crack Apps](https://github.com/liad07/crack-apps.github.io)** (est. 2019) — a personal software studio for apps, games, and tutorials. It carries forward the spirit of **[StreamNet](https://github.com/liad07/StreamNet)**, a graduation-project live streaming platform (*“Streaming Everything You Need”*). Think of World Cup Hub as **StreamNet 2.0**: focused, polished, and built for the biggest tournament on earth.
+**World Cup Hub** is a premium Hebrew-first sports streaming experience for **FIFA World Cup 2026**. It is the spiritual successor to **[StreamNet](https://github.com/liad07/StreamNet)** (graduation-project live TV platform) and part of the **[Crack Apps](https://github.com/liad07/crack-apps.github.io)** ecosystem (personal software studio since 2019).
+
+> *Streaming Everything You Need* — evolved into a focused tournament product.
 
 Built with ❤️ by **[Crack Apps](https://github.com/liad07/crack-apps.github.io)** · Powered by **[StreamNet](https://github.com/liad07/StreamNet)**
 
-## 🎯 Features
+## Features
 
-| Area | Highlights |
-|------|------------|
-| **Home & live** | Live scores, match cards, and a real-time feel for what is on right now |
-| **Schedule** | Timeline-style schedule so you never miss a kickoff |
-| **Tournament** | Tabs and views across the World Cup journey |
-| **Match center** | Per-match detail pages with stats and context |
-| **Standings** | Group tables and progression at a glance |
-| **Bracket** | Knockout visualization for the road to the final |
-| **Watch** | Gated HLS stream experience for match viewing |
-| **Fan chat** | Match-room chat — local fallback or online (Clerk + Neon + Pusher) |
-| **Auth** | Sign in / sign up via Clerk when online mode is configured |
-| **About** | In-app story: Crack Apps, StreamNet legacy, and this project |
+| Area | What you get |
+|------|----------------|
+| **Home** | Cinematic hero, live scores, featured match, World Cup countdown |
+| **Schedule** | Timeline view — scroll past & future matches, auto-scroll to next kickoff |
+| **Match center** | Events, lineups (formation pitch), stats, YouTube highlights link |
+| **Tournament** | Unified **בתים וטבלאות** + **נוקאאוט** tabs with official FIFA bracket tree |
+| **Live** | Auto-refreshing scores, goals, cards, substitutions |
+| **Watch** | HLS player (custom controls, quality, PiP, iOS native HLS), gated when no Mundial on air |
+| **Fan chat** | Online chat (Clerk + Neon + polling) or local fallback |
+| **Shabbat Guard** | IP-based zmanim, stream/chat block during Shabbat ([shabbat-guard](https://github.com/liad07/shabbat-guard) logic) |
+| **Admin** | Owner dashboard at `/admin` — visits, live viewers, Clerk users, Shabbat stats |
+| **PWA** | App icon, manifest, install to home screen (iOS & Android) |
+| **Auth** | Clerk sign-in / sign-up with profile & avatar |
 
-Data layers combine **FIFA-facing feeds**, **API-Football**, TV/XMLTV-style guides, and sensible fallbacks when keys are not set — so the UI always stays usable in dev.
+Data: **FIFA API** (primary, no key) → API-Football → mock fallbacks. Kan 11 EPG for Mundial-only TV schedule.
 
-## 🛠 Tech stack
+## Screenshots
 
-- **Framework:** [Next.js 15](https://nextjs.org) (App Router) + **React 19** + **TypeScript**
-- **Styling:** [Tailwind CSS](https://tailwindcss.com)
-- **Video:** [hls.js](https://github.com/video-dev/hls.js) for adaptive streaming
-- **Data:** FIFA API patterns, API-Football / API-Sports, mock fallbacks
-- **Auth:** [Clerk](https://clerk.com) (optional, for online chat & accounts)
-- **Database:** [Neon](https://neon.tech) Postgres (optional, chat persistence)
-- **Realtime:** [Pusher Channels](https://pusher.com) (optional, live chat)
+<p align="center">
+  <img src="public/images/hero-trophy.png" alt="Trophy" width="280" />
+</p>
 
-## 🧭 Part of the Crack Apps ecosystem
+## Tech stack
 
-| Project | Role |
-|---------|------|
-| **[Crack Apps](https://github.com/liad07/crack-apps.github.io)** | Studio hub — apps, experiments, and learning projects since 2019 |
-| **[StreamNet](https://github.com/liad07/StreamNet)** | Original streaming vision — graduation project, spiritual predecessor to this app |
-| **[World Cup Hub](https://github.com/liad07/WC26-HUB)** | Production-focused sports product for WC 2026 — [live demo](https://mundial-now.vercel.app) |
+- **Next.js 15** · App Router · React 19 · TypeScript
+- **Tailwind CSS** — dark premium design system (RTL)
+- **hls.js** + native Safari HLS on iOS
+- **Clerk** — authentication
+- **Neon Postgres** — chat + analytics
+- **Hebcal + ipapi.co** — Shabbat times (IP-only, no geolocation prompt)
+- **Recharts** — admin analytics charts
 
-Explore the lineage: [Crack Apps](https://github.com/liad07/crack-apps.github.io) → [StreamNet](https://github.com/liad07/StreamNet) → [World Cup Hub](https://github.com/liad07/WC26-HUB).
+## Ecosystem
 
-## 🚀 Getting started
+| Project | Link | Role |
+|---------|------|------|
+| **Crack Apps** | [github.com/liad07/crack-apps.github.io](https://github.com/liad07/crack-apps.github.io) | Creator studio |
+| **StreamNet** | [github.com/liad07/StreamNet](https://github.com/liad07/StreamNet) | Original streaming platform |
+| **Shabbat Guard** | [github.com/liad07/shabbat-guard](https://github.com/liad07/shabbat-guard) | Shabbat protection library |
+| **World Cup Hub** | [github.com/liad07/WC26-HUB](https://github.com/liad07/WC26-HUB) | This repo · [live](https://wchub26.vercel.app) |
+
+```
+Crack Apps → StreamNet → World Cup Hub
+```
+
+## Getting started
 
 ```bash
 git clone https://github.com/liad07/WC26-HUB.git
@@ -83,45 +96,52 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Scripts
-
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server |
+| `npm run dev` | Development server |
 | `npm run build` | Production build |
-| `npm run start` | Run production server |
-| `npm run lint` | ESLint |
+| `npm run start` | Run production build |
 | `npm run typecheck` | TypeScript check |
+| `npm run icons` | Regenerate PWA icons from source |
 
-## 🔐 Environment variables
+## Environment
 
-Copy **`.env.example`** → **`.env`** and fill in only what you need. **Never commit `.env` or real secrets.**
+Copy `.env.example` → `.env`. **Never commit secrets.**
 
 | Variable | Purpose |
 |----------|---------|
-| `API_FOOTBALL_KEY` | API-Football / API-Sports key (optional — mocks without it) |
-| `API_FOOTBALL_HOST` | API host override |
-| `DATABASE_URL` | Neon Postgres for online chat |
-| `NEXT_PUBLIC_CLERK_*` / `CLERK_SECRET_KEY` | Clerk authentication |
-| `PUSHER_*` / `NEXT_PUBLIC_PUSHER_*` | Realtime chat delivery |
+| `API_FOOTBALL_KEY` | Optional API-Football backup |
+| `DATABASE_URL` | Neon — chat + analytics |
+| `NEXT_PUBLIC_CLERK_*` / `CLERK_SECRET_KEY` | Clerk auth |
+| `NEXT_PUBLIC_SHABBAT_GUARD_ENABLED` | Shabbat guard on/off (default on) |
+| `PUSHER_*` | Optional — chat uses DB polling without it |
 
-Online fan chat activates when **database + Clerk + Pusher** are all configured; otherwise chat stays in a local/offline mode.
+Online chat activates with **Clerk + DATABASE_URL**. Pusher is optional.
 
-## 📸 Assets in this repo
+## Project status
 
-README visuals use:
+This repository is a **completed portfolio / production build** for World Cup 2026. The codebase is stable and deployed; future experiments live under new Crack Apps projects.
 
-- `public/images/hero-trophy.png`
-- `public/images/hero-stadium.png`
+## Assets
 
-Additional screenshots can be added under `public/images/readme/` over time.
-
-## 📄 License & use
-
-This project is shared as a portfolio / learning artifact. Respect third-party API terms (FIFA, API-Football, broadcast sources) when deploying your own instance.
+| File | Use |
+|------|-----|
+| `app/icon.png` | App & favicon (512×512) |
+| `app/apple-icon.png` | iOS home screen |
+| `public/icons/` | PWA icons (192, 512, maskable) |
+| `public/images/hero-stadium.png` | Marketing hero |
+| `public/images/hero-trophy.png` | Bracket / trophy visuals |
+| `assets/icon-source.png` | Icon regeneration source |
 
 ---
 
 <p align="center">
-  <sub>World Cup Hub · <a href="https://mundial-now.vercel.app">mundial-now.vercel.app</a> · Crack Apps](https://github.com/liad07/crack-apps.github.io) · [StreamNet](https://github.com/liad07/StreamNet)</sub>
+  <img src="app/icon.png" alt="WCH" width="48" height="48" /><br/>
+  <strong>World Cup Hub</strong><br/>
+  <a href="https://wchub26.vercel.app">wchub26.vercel.app</a><br/>
+  <sub>
+    <a href="https://github.com/liad07/crack-apps.github.io">Crack Apps</a> ·
+    <a href="https://github.com/liad07/StreamNet">StreamNet</a> ·
+    <a href="https://github.com/liad07/WC26-HUB">WC26-HUB</a>
+  </sub>
 </p>
