@@ -16,6 +16,8 @@ interface QualityLevel {
 }
 
 const AUTO = -1;
+const IOS_HIDE_MS = 6000;
+const DESKTOP_HIDE_MS = 2800;
 
 /** HLS player with tuned buffering, custom controls and quality selection. */
 export function LivePlayer({ src }: LivePlayerProps) {
@@ -23,6 +25,7 @@ export function LivePlayer({ src }: LivePlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const playTouchHandled = useRef(false);
 
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -39,6 +42,9 @@ export function LivePlayer({ src }: LivePlayerProps) {
   const [pip, setPip] = useState(false);
   const [pipSupported, setPipSupported] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(true);
+  const [toast, setToast] = useState<string | null>(null);
 
   const retry = useCallback(() => {
     setError(false);
@@ -46,11 +52,22 @@ export function LivePlayer({ src }: LivePlayerProps) {
     setReloadKey((k) => k + 1);
   }, []);
 
+  const showToast = useCallback((message: string) => {
+    setToast(message);
+    window.setTimeout(() => setToast(null), 3200);
+  }, []);
+
+  useEffect(() => {
+    setIsIOS(VideoPlatform.isIOS());
+    setShowVolumeSlider(VideoPlatform.supportsVolumeSlider());
+  }, []);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     video.setAttribute("webkit-playsinline", "true");
+    video.setAttribute("playsinline", "true");
     video.setAttribute("x-webkit-airplay", "allow");
 
     setError(false);
@@ -58,8 +75,11 @@ export function LivePlayer({ src }: LivePlayerProps) {
     let recovers = 0;
 
     if (VideoPlatform.shouldUseNativeHls(video)) {
-      video.src = src;
-    } else if (Hls.isSupported()) {
+      if (process.env.NODE_ENV === "development") {
+        console.info("[LivePlayer] native HLS path (iOS)", { src });
+      }
+      VideoPlatform.attachNativeHls(video, src);
+    } else if (!VideoPlatform.isIOS() && Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: false,
@@ -104,7 +124,7 @@ export function LivePlayer({ src }: LivePlayerProps) {
         }
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = src;
+      VideoPlatform.attachNativeHls(video, src);
     } else {
       setError(true);
       setLoading(false);
@@ -162,10 +182,13 @@ export function LivePlayer({ src }: LivePlayerProps) {
   const toggleMute = () => {
     const video = videoRef.current;
     if (!video) return;
-    video.muted = !video.muted;
+    const next = VideoPlatform.toggleMute(video);
+    setMuted(next);
+    if (!isIOS) setVolume(next ? 0 : video.volume || 1);
   };
 
   const changeVolume = (value: number) => {
+    if (!showVolumeSlider) return;
     const video = videoRef.current;
     if (!video) return;
     video.volume = value;
@@ -176,21 +199,34 @@ export function LivePlayer({ src }: LivePlayerProps) {
     const video = videoRef.current;
     const container = containerRef.current;
     if (!video || !container) return;
-    VideoPlatform.enterFullscreen(video, container).catch(() => undefined);
+    VideoPlatform.enterFullscreen(video, container);
   };
 
   const togglePip = () => {
     const video = videoRef.current;
     if (!video) return;
-    VideoPlatform.togglePip(video).catch(() => undefined);
+    const result = VideoPlatform.togglePip(video);
+    if (result === "unsupported") showToast("PiP לא נתמך במכשיר זה");
+    if (result === "needs-play") {
+      video.play().catch(() => undefined);
+      showToast("יש להפעיל את השידור לפני PiP");
+    }
+    if (result === "entered") setPip(true);
+    if (result === "exited") setPip(false);
   };
 
   const revealControls = () => {
     setControlsVisible(true);
     if (hideTimer.current) clearTimeout(hideTimer.current);
+    const delay = isIOS ? IOS_HIDE_MS : DESKTOP_HIDE_MS;
     hideTimer.current = setTimeout(() => {
       if (!videoRef.current?.paused) setControlsVisible(false);
-    }, 2800);
+    }, delay);
+  };
+
+  const runPress = (action: () => void) => {
+    revealControls();
+    action();
   };
 
   const currentLabel =
@@ -206,6 +242,7 @@ export function LivePlayer({ src }: LivePlayerProps) {
         <p className="mt-1 text-sm text-gray-400">ייתכן שהשידור הסתיים או שיש בעיית רשת.</p>
         <div className="mt-5 flex gap-2">
           <button
+            type="button"
             onClick={retry}
             className="rounded-lg bg-pitch-accent px-4 py-2 text-sm font-bold text-black transition hover:brightness-110"
           >
@@ -238,10 +275,17 @@ export function LivePlayer({ src }: LivePlayerProps) {
         </span>
       </div>
 
+      {toast && (
+        <div className="pointer-events-none absolute left-1/2 top-4 z-30 -translate-x-1/2 rounded-lg bg-black/80 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+          {toast}
+        </div>
+      )}
+
       <video
         ref={videoRef}
         autoPlay
         playsInline
+        muted={false}
         disablePictureInPicture={false}
         controls={false}
         onClick={togglePlay}
@@ -260,7 +304,7 @@ export function LivePlayer({ src }: LivePlayerProps) {
           const v = videoRef.current;
           if (!v) return;
           setMuted(v.muted);
-          setVolume(v.volume);
+          if (showVolumeSlider) setVolume(v.volume);
         }}
         className="aspect-video w-full cursor-pointer bg-black"
       />
@@ -274,9 +318,23 @@ export function LivePlayer({ src }: LivePlayerProps) {
 
       {!playing && !loading && (
         <button
-          onClick={togglePlay}
+          type="button"
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            playTouchHandled.current = true;
+            runPress(togglePlay);
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (playTouchHandled.current) {
+              playTouchHandled.current = false;
+              return;
+            }
+            runPress(togglePlay);
+          }}
           aria-label="נגן"
-          className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 transition"
+          className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/30 transition [touch-action:manipulation] [-webkit-tap-highlight-color:transparent]"
         >
           <span className="flex h-16 w-16 items-center justify-center rounded-full bg-pitch-accent text-black shadow-lg transition hover:scale-105">
             <PlayIcon size={30} />
@@ -285,30 +343,37 @@ export function LivePlayer({ src }: LivePlayerProps) {
       )}
 
       <div
+        onTouchStart={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         className={`absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-3 pb-3 pt-10 transition-opacity duration-300 ${
-          controlsVisible ? "opacity-100" : "opacity-0"
+          controlsVisible ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <ControlButton onClick={togglePlay} label={playing ? "השהה" : "נגן"}>
+            <ControlButton onPress={() => runPress(togglePlay)} label={playing ? "השהה" : "נגן"}>
               {playing ? <PauseIcon /> : <PlayIcon />}
             </ControlButton>
 
             <div className="flex items-center gap-1.5">
-              <ControlButton onClick={toggleMute} label={muted ? "בטל השתקה" : "השתק"}>
+              <ControlButton
+                onPress={() => runPress(toggleMute)}
+                label={muted ? "בטל השתקה" : isIOS ? "הנמכת מוזיקה" : "השתק"}
+              >
                 {muted || volume === 0 ? <MuteIcon /> : <VolumeIcon />}
               </ControlButton>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.05}
-                value={muted ? 0 : volume}
-                onChange={(e) => changeVolume(Number(e.target.value))}
-                aria-label="עוצמת שמע"
-                className="h-1 w-16 cursor-pointer accent-pitch-accent sm:w-24"
-              />
+              {showVolumeSlider && (
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={muted ? 0 : volume}
+                  onChange={(e) => changeVolume(Number(e.target.value))}
+                  aria-label="עוצמת שמע"
+                  className="h-1 w-16 cursor-pointer accent-pitch-accent sm:w-24"
+                />
+              )}
             </div>
           </div>
 
@@ -316,8 +381,17 @@ export function LivePlayer({ src }: LivePlayerProps) {
             {levels.length > 0 && (
               <div className="relative">
                 <button
-                  onClick={() => setMenuOpen((o) => !o)}
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20"
+                  type="button"
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    runPress(() => setMenuOpen((o) => !o));
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    runPress(() => setMenuOpen((o) => !o));
+                  }}
+                  className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20 [touch-action:manipulation] [-webkit-tap-highlight-color:transparent]"
                 >
                   <GearIcon />
                   {currentLabel}
@@ -339,12 +413,12 @@ export function LivePlayer({ src }: LivePlayerProps) {
             )}
 
             {pipSupported && (
-              <ControlButton onClick={togglePip} label="תמונה בתוך תמונה">
+              <ControlButton onPress={() => runPress(togglePip)} label="תמונה בתוך תמונה">
                 <PipIcon active={pip} />
               </ControlButton>
             )}
 
-            <ControlButton onClick={toggleFullscreen} label="מסך מלא">
+            <ControlButton onPress={() => runPress(toggleFullscreen)} label="מסך מלא">
               {fullscreen ? <ExitFullscreenIcon /> : <FullscreenIcon />}
             </ControlButton>
           </div>
@@ -355,19 +429,36 @@ export function LivePlayer({ src }: LivePlayerProps) {
 }
 
 function ControlButton({
-  onClick,
+  onPress,
   label,
   children,
 }: {
-  onClick: () => void;
+  onPress: () => void;
   label: string;
   children: React.ReactNode;
 }) {
+  const touchHandled = useRef(false);
+
   return (
     <button
-      onClick={onClick}
+      type="button"
       aria-label={label}
-      className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-white transition hover:bg-white/15 active:bg-white/25"
+      onTouchStart={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        touchHandled.current = true;
+        onPress();
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (touchHandled.current) {
+          touchHandled.current = false;
+          return;
+        }
+        onPress();
+      }}
+      className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg text-white transition hover:bg-white/15 active:bg-white/25 [touch-action:manipulation] [-webkit-tap-highlight-color:transparent]"
     >
       {children}
     </button>
@@ -377,8 +468,9 @@ function ControlButton({
 function QualityOption({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`flex w-full min-h-11 items-center justify-between px-3 py-2 text-right transition hover:bg-pitch-bg ${
+      className={`flex min-h-11 w-full items-center justify-between px-3 py-2 text-right transition hover:bg-pitch-bg ${
         active ? "font-bold text-pitch-accent" : "text-gray-200"
       }`}
     >
