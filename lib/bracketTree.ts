@@ -32,11 +32,11 @@ const QF_FEEDERS: readonly (readonly [number, number])[] = [
 
 const SF_FEEDERS: readonly [number, number] = [101, 102];
 
-export const ROUND_SLOT_NUMBERS: Record<string, number[]> = {
+export const ROUND_SLOT_NUMBERS: Record<string, readonly number[]> = {
   "Round of 32": R32_FEEDERS.flat(),
   "Round of 16": R16_FEEDERS.flat(),
   "Quarter-final": QF_FEEDERS.flat(),
-  "Semi-final": SF_FEEDERS,
+  "Semi-final": [101, 102],
   Final: [104],
   [THIRD_PLACE]: [103],
 };
