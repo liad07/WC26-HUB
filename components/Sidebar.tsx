@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Brand } from "@/components/Brand";
 import { Icon } from "@/components/Icon";
 import { NAV_ITEMS } from "@/lib/nav";
+import { ShabbatIndicator } from "@/components/shabbat/ShabbatIndicator";
 
 /** Persistent desktop sidebar (RTL, right-aligned) with brand, live CTA and nav. */
 export function Sidebar() {
@@ -38,6 +39,8 @@ export function Sidebar() {
           </Link>
         ))}
       </nav>
+
+      <ShabbatIndicator />
 
       <LineageCard active={isActive("/about")} />
     </aside>

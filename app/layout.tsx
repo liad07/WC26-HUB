@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { BottomNav } from "@/components/BottomNav";
 import { Footer } from "@/components/Footer";
+import { ShabbatGuard } from "@/components/ShabbatGuard";
 import { CHAT_AUTH_ENABLED } from "@/lib/features";
 
 const heebo = Heebo({ subsets: ["hebrew", "latin"], variable: "--font-heebo" });
@@ -25,13 +26,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const shell = (
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body className="min-h-screen font-sans antialiased">
-        <Sidebar />
-        <div className="lg:mr-64">
-          <Topbar />
-          <main className="mx-auto max-w-6xl px-4 pb-6 pt-6">{children}</main>
-          <Footer />
-        </div>
-        <BottomNav />
+        <ShabbatGuard>
+          <Sidebar />
+          <div className="lg:mr-64">
+            <Topbar />
+            <main className="mx-auto max-w-6xl px-4 pb-6 pt-6">{children}</main>
+            <Footer />
+          </div>
+          <BottomNav />
+        </ShabbatGuard>
       </body>
     </html>
   );

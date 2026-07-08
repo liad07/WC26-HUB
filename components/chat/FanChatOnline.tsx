@@ -11,7 +11,7 @@ import type { ClientMessage } from "@/lib/chatTypes";
 const POLL_INTERVAL_MS = 2000;
 
 /** Shared chat: history from Postgres, live updates via Pusher when set, else polling. */
-export function FanChatOnline({ roomId, title }: { roomId: string; title: string }) {
+export function FanChatOnline({ roomId, title, readOnly = false }: { roomId: string; title: string; readOnly?: boolean }) {
   const { isSignedIn } = useUser();
   const [messages, setMessages] = useState<ClientMessage[]>([]);
   const [text, setText] = useState("");
@@ -78,6 +78,7 @@ export function FanChatOnline({ roomId, title }: { roomId: string; title: string
   }, [roomId]);
 
   const send = async (body: string) => {
+    if (readOnly) return;
     const trimmed = body.trim();
     if (!trimmed || sending) return;
     setSending(true);
@@ -113,7 +114,9 @@ export function FanChatOnline({ roomId, title }: { roomId: string; title: string
         </span>
       }
       footer={
-        isSignedIn ? (
+        readOnly ? (
+          <p className="text-center text-sm text-gray-500">הצ׳אט אינו פעיל בשבת קודש · שבת שלום</p>
+        ) : isSignedIn ? (
           <>
             {error && <p className="mb-2 text-xs font-semibold text-pitch-live">{error}</p>}
             <QuickReplies onPick={send} />

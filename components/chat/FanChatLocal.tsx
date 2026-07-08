@@ -7,7 +7,7 @@ import { QUICK_REPLIES, type ClientMessage } from "@/lib/chatTypes";
 const NAME_KEY = "mundial:chat:name";
 
 /** Offline fallback chat persisted to the current browser's localStorage. */
-export function FanChatLocal({ roomId, title }: { roomId: string; title: string }) {
+export function FanChatLocal({ roomId, title, readOnly = false }: { roomId: string; title: string; readOnly?: boolean }) {
   const storageKey = useMemo(() => `mundial:chat:${roomId}`, [roomId]);
   const [messages, setMessages] = useState<ClientMessage[]>([]);
   const [name, setName] = useState("");
@@ -29,6 +29,7 @@ export function FanChatLocal({ roomId, title }: { roomId: string; title: string 
   }, [messages, storageKey, ready]);
 
   const send = (body: string) => {
+    if (readOnly) return;
     const trimmed = body.trim();
     if (!trimmed) return;
     const author = name.trim() || "אנונימי";
@@ -43,6 +44,9 @@ export function FanChatLocal({ roomId, title }: { roomId: string; title: string 
   return (
     <ChatShell title={title} subtitle="ההודעות נשמרות מקומית בדפדפן שלך" messages={messages}
       footer={
+        readOnly ? (
+          <p className="text-center text-sm text-gray-500">הצ׳אט אינו פעיל בשבת קודש · שבת שלום</p>
+        ) : (
         <>
           <QuickReplies onPick={send} />
           <input
@@ -69,6 +73,7 @@ export function FanChatLocal({ roomId, title }: { roomId: string; title: string 
             </button>
           </form>
         </>
+        )
       }
     />
   );

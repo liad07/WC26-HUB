@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { ShabbatIndicator } from "@/components/shabbat/ShabbatIndicator";
 
 /** Centered premium mobile footer with the Crack Apps → StreamNet → World Cup Hub lineage. */
 export function Footer() {
@@ -23,6 +24,9 @@ export function Footer() {
               <p className="eyebrow mt-1.5">Powered by{" "}
                 <a href="https://github.com/liad07/StreamNet" target="_blank" rel="noopener noreferrer" className="transition hover:text-pitch-accent">StreamNet</a>
               </p>
+              <div className="mt-2 flex justify-center">
+                <ShabbatIndicator compact />
+              </div>
             </div>
 
             <p className="max-w-[15rem] text-xs leading-relaxed text-gray-500">

@@ -14,6 +14,8 @@ import { TvScheduleList } from "@/components/watch/TvScheduleList";
 import { NoActiveMatch } from "@/components/watch/NoActiveMatch";
 import { MatchPanel } from "@/components/watch/MatchPanel";
 import { StreamPoster } from "@/components/watch/StreamPoster";
+import { ShabbatWatchPoster } from "@/components/shabbat/ShabbatWatchPoster";
+import { useShabbat } from "@/components/shabbat/ShabbatProvider";
 
 interface WatchExperienceProps {
   streamUrl: string;
@@ -23,6 +25,7 @@ type FixtureResponse = { matches: Match[] };
 
 /** Orchestrates the live channel: player, on-air schedule, live-match panel and chat. */
 export function WatchExperience({ streamUrl }: WatchExperienceProps) {
+  const { isShabbat, times, location } = useShabbat();
   const { data, loading, error } = useFetch<TvSchedule>("/api/tv-schedule", 300_000);
   const today = useFetch<FixtureResponse>("/api/matches?date=today", 60_000);
   const tomorrow = useFetch<FixtureResponse>("/api/matches?date=tomorrow", 300_000);
@@ -78,7 +81,13 @@ export function WatchExperience({ streamUrl }: WatchExperienceProps) {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
       <div className="space-y-4">
-        {mundialOnAir ? <LivePlayer src={streamUrl} /> : <StreamPoster nextMatch={nextMatch} />}
+        {isShabbat && times && location ? (
+          <ShabbatWatchPoster times={times} timezone={location.timezone} />
+        ) : mundialOnAir ? (
+          <LivePlayer src={streamUrl} />
+        ) : (
+          <StreamPoster nextMatch={nextMatch} />
+        )}
 
         {loading ? (
           <MatchListSkeleton count={2} />
