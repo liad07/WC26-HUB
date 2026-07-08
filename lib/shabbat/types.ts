@@ -1,4 +1,4 @@
-export type ShabbatLocationMode = "api" | "prompt-then-api" | "prompt-only" | "none";
+export type ShabbatLocationMode = "api" | "none";
 export type ShabbatMinhag = "default" | "chabad" | "jerusalem40" | "custom";
 export type ShabbatStatus = "loading" | "inactive" | "approaching" | "active";
 
@@ -6,7 +6,7 @@ export interface ShabbatLocation {
   latitude: number;
   longitude: number;
   timezone: string;
-  source: "geolocation" | "ipapi" | "default";
+  source: "ipapi" | "default";
 }
 
 export interface ShabbatTimes {
@@ -17,7 +17,6 @@ export interface ShabbatTimes {
 export interface ShabbatConfig {
   enabled: boolean;
   location: ShabbatLocationMode;
-  onDeny: "api" | "none";
   minhag: ShabbatMinhag;
   havdalahMinutes: number;
   warningMinutes: number;

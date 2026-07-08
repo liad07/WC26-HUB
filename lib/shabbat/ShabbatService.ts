@@ -183,55 +183,13 @@ export class ShabbatService {
   }
 
   private async resolveLocation(): Promise<ShabbatLocation | null> {
-    const mode = this.config.location;
-
-    if (mode === "none") return this.config.defaultLocation;
-
-    if (mode === "api") {
-      try {
-        return await this.locateByIp();
-      } catch {
-        return this.config.defaultLocation;
-      }
-    }
-
-    if (mode === "prompt-only") {
-      try {
-        return await this.locateByGeolocation();
-      } catch {
-        return this.config.onDeny === "api" ? this.locateByIp().catch(() => this.config.defaultLocation) : null;
-      }
-    }
+    if (this.config.location === "none") return this.config.defaultLocation;
 
     try {
-      return await this.locateByGeolocation();
+      return await this.locateByIp();
     } catch {
-      try {
-        return await this.locateByIp();
-      } catch {
-        return this.config.defaultLocation;
-      }
+      return this.config.defaultLocation;
     }
-  }
-
-  private locateByGeolocation(): Promise<ShabbatLocation> {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error("geolocation_unavailable"));
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        (pos) =>
-          resolve({
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
-            source: "geolocation",
-          }),
-        () => reject(new Error("geolocation_denied")),
-        { enableHighAccuracy: false, timeout: 6000, maximumAge: 5 * 60 * 1000 }
-      );
-    });
   }
 
   private async locateByIp(): Promise<ShabbatLocation> {

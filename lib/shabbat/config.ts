@@ -7,12 +7,16 @@ const ISRAEL_DEFAULT: ShabbatConfig["defaultLocation"] = {
   source: "default",
 };
 
+function resolveLocationMode(raw: string | undefined): ShabbatLocationMode {
+  if (raw === "none") return "none";
+  return "api";
+}
+
 /** Reads Shabbat guard settings from public env vars. */
 export function getShabbatConfig(): ShabbatConfig {
   return {
     enabled: process.env.NEXT_PUBLIC_SHABBAT_GUARD_ENABLED !== "false",
-    location: (process.env.NEXT_PUBLIC_SHABBAT_LOCATION as ShabbatLocationMode) || "prompt-then-api",
-    onDeny: process.env.NEXT_PUBLIC_SHABBAT_ON_DENY === "none" ? "none" : "api",
+    location: resolveLocationMode(process.env.NEXT_PUBLIC_SHABBAT_LOCATION),
     minhag: (process.env.NEXT_PUBLIC_SHABBAT_MINHAG as ShabbatMinhag) || "default",
     havdalahMinutes: Number(process.env.NEXT_PUBLIC_SHABBAT_HAVDALAH_MINUTES || "40"),
     warningMinutes: Number(process.env.NEXT_PUBLIC_SHABBAT_WARNING_MINUTES || "60"),
